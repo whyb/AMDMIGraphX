@@ -129,6 +129,7 @@ jobs:
         -D HIP_PLATFORM=amd
         -D GPU_TARGETS="gfx1030;gfx1031;gfx1032;gfx1100;gfx1101;gfx1102"
         -D CMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
+        -D MIGRAPHX_ENABLE_PYTHON=OFF
 
     - name: Build MIGraphX
       run: cmake --build build --verbose
@@ -145,7 +146,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: migraphx-win64
-        retention-days: 1
+        retention-days: 90
         path: migraphx
 
     - name: Package
