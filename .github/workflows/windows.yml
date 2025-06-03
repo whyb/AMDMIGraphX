@@ -12,7 +12,6 @@ jobs:
     - name: Checkout repo
       uses: actions/checkout@v4
       with:
-        # ref: 6acc1f957bab2d2b23b3adffccd29f7e10178986
         fetch-depth: 0
 
     - name: Setup MSVC
@@ -130,6 +129,8 @@ jobs:
         -D GPU_TARGETS="gfx1030;gfx1031;gfx1032;gfx1100;gfx1101;gfx1102"
         -D CMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
         -D MIGRAPHX_ENABLE_PYTHON=OFF
+        -D MIGRAPHX_USE_ROCBLAS=ON
+        -D rocblas_DIR="C:/Program Files/AMD/ROCm/6.2/lib/cmake/hipblas"
 
     - name: Build MIGraphX
       run: cmake --build build --verbose

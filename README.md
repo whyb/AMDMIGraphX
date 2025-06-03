@@ -1,3 +1,18 @@
+# AMD MIGraphX for Windows Build
+[![Build Windows](https://github.com/whyb/AMDMIGraphX/actions/workflows/windows.yml/badge.svg?branch=build-windows)](https://github.com/whyb/AMDMIGraphX/actions/workflows/windows.yml)
+
+For some unknown reason, AMD has never released a readily available binary version of the MIGraphX SDK for Windows. This led to the idea of using GitHub Actions to compile a Windows version of MIGraphX, which ultimately resulted in the creation of this project.
+
+不知是何原因AMD始终没放出Windows版本的直接可用的二进制版本的MIGraphX SDK，因此才产生了利用Github Actions来编译一个Windows平台的MIGraphX的想法，故才有了此项目。
+
+# AMD ROCm SDK for Windows
+Version: `6.2.41512-db3292736`
+
+SDK download: https://download.amd.com/developer/eula/rocm-hub/AMD-Software-PRO-Edition-24.Q4-WinSvr2022-For-HIP.exe
+
+
+*Here is the README content of the original project:*
+------------------------------------------------------------------
 # AMD MIGraphX
 
 AMD MIGraphX is AMD's graph inference engine, which accelerates machine learning model inference.
