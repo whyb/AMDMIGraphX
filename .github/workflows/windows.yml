@@ -108,16 +108,6 @@ jobs:
           cmake --build build_rel --verbose
           cmake --install build_rel --prefix ../install
 
-    - name: Setup hipBLASLT library
-      run: |
-        cd depend
-        if not exist hipBLASLt (
-          git clone https://github.com/ROCm/hipBLASLt.git
-        )
-        cd hipBLASLt
-        python3 -m pip install -r tensilelite/requirements.txt
-        ./install.sh -idc --legacy_hipblas_direct
-
     # 针对 rocMLIR 的缓存步骤
     - name: Cache rocMLIR build artifacts
       id: cache-rocmlir
@@ -174,6 +164,7 @@ jobs:
         -D GPU_TARGETS="gfx1030;gfx1031;gfx1032;gfx1100;gfx1101;gfx1102"
         -D CMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
         -D MIGRAPHX_ENABLE_PYTHON=OFF
+        -D MIGRAPHX_USE_HIPBLASLT=OFF
         -D MIGRAPHX_USE_ROCBLAS=ON
         -D rocblas_DIR="C:/Program Files/AMD/ROCm/6.2/lib/cmake/rocblas"
 
