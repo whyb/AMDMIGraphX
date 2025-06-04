@@ -43,7 +43,7 @@ jobs:
       if: steps.cache-depend.outputs.cache-hit != 'true'
       run: |
         cd depend
-        git clone https://github.com/ROCm/half --depth 1
+        git clone -v --recurse-submodules --depth 1 --no-single-branch --progress "https://github.com/ROCm/half"
         cd half
         cmake -S . -B build -D CMAKE_PREFIX_PATH="%cd%/../install"
         cmake --install build --prefix ../install
@@ -52,10 +52,10 @@ jobs:
       if: steps.cache-depend.outputs.cache-hit != 'true'
       run: |
         cd depend
-        git clone https://github.com/nlohmann/json
+        git clone -v --recurse-submodules --depth 1 --no-single-branch --progress --branch v3.8.0 "https://github.com/nlohmann/json"
         cd json
         :: follows https://github.com/AmusementClub/AMDMIGraphX/blob/develop/requirements.txt
-        git checkout v3.8.0
+        :: git checkout v3.8.0
         cmake -S . -B build -D BUILD_TESTING=OFF -Wno-dev
         cmake --install build --prefix ../install
 
@@ -67,10 +67,10 @@ jobs:
       if: steps.cache-depend.outputs.cache-hit != 'true'
       run: |
         cd depend
-        git clone https://github.com/msgpack/msgpack-c
+        git clone -v --recurse-submodules --depth 1 --no-single-branch --progress --branch cpp-3.3.0 "https://github.com/msgpack/msgpack-c"
         cd msgpack-c
         :: follows https://github.com/AmusementClub/AMDMIGraphX/blob/develop/requirements.txt
-        git checkout cpp-3.3.0
+        :: git checkout cpp-3.3.0
         :: patch for cmake msvc rt flag
         python -c "f=open('CMakeLists.txt');lines=f.readlines();lines[0]='cmake_minimum_required(VERSION 3.15)\n';f.close();f=open('CMakeLists.txt','w');f.writelines(lines);f.close()"
         cmake -S . -B build -G Ninja -D CMAKE_BUILD_TYPE=Release -D MSGPACK_BUILD_TESTS=OFF -D MSGPACK_BUILD_EXAMPLES=OFF -D CMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded -Wno-dev
@@ -99,14 +99,26 @@ jobs:
       run: |
           cd depend
           if not exist protobuf (
-          git clone https://github.com/google/protobuf
+            git clone -v --recurse-submodules --depth 1 --no-single-branch --progress --branch v3.21.12 "https://github.com/google/protobuf"
           )
           cd protobuf
           :: follows onnx's recommended version
-          git checkout v3.21.12
-          cmake -S . -B build_rel -G Ninja -D CMAKE_BUILD_TYPE=Release -D protobuf_BUILD_TESTS=OFF -D protobuf_MSVC_STATIC_RUNTIME=ON   -Wno-dev
+          :: git checkout v3.21.12
+          cmake -S . -B build_rel -G Ninja -D CMAKE_BUILD_TYPE=Release -D protobuf_BUILD_TESTS=OFF -D protobuf_MSVC_STATIC_RUNTIME=ON -Wno-dev
           cmake --build build_rel --verbose
           cmake --install build_rel --prefix ../install
+
+    - name: Setup hipBLASLt library
+      run: |
+          cd depend
+          if not exist hipBLASLt (
+            git clone -v --recurse-submodules --depth 1 --no-single-branch --progress --branch release/rocm-rel-6.2.4.1 "https://github.com/ROCm/hipBLASLt"
+          )
+          cd hipBLASLt
+          :: git checkout release/rocm-rel-6.2.4.1
+          cmake -S . -B build -G Ninja -D CMAKE_BUILD_TYPE=Release -D protobuf_BUILD_TESTS=OFF -D protobuf_MSVC_STATIC_RUNTIME=ON   -Wno-dev
+          cmake --build build --verbose
+          cmake --install build --prefix ../install
 
     # 针对 rocMLIR 的缓存步骤
     - name: Cache rocMLIR build artifacts
@@ -165,7 +177,7 @@ jobs:
         -D CMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
         -D MIGRAPHX_ENABLE_PYTHON=OFF
         -D MIGRAPHX_USE_HIPBLASLT=OFF
-        -D MIGRAPHX_USE_ROCBLAS=ON
+        -D MIGRAPHX_USE_ROCBLAS=OFF
         -D rocblas_DIR="C:/Program Files/AMD/ROCm/6.2/lib/cmake/rocblas"
 
     - name: Build MIGraphX
