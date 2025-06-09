@@ -39,6 +39,33 @@ jobs:
         cmake -S . -B build
         cmake --install build --prefix ../install
 
+    - name: Cache HIP SDK
+      id: cache-hip
+      uses: actions/cache@v4
+      with:
+        path: C:\Program Files\AMD\ROCM
+        key: ${{ runner.os }}-rocm-6.2.4
+
+    - name: Setup HIP
+      if: steps.cache-hip.outputs.cache-hit != 'true'
+      shell: pwsh
+      run: |
+        curl -s -o hip_installer.exe -L https://download.amd.com/developer/eula/rocm-hub/AMD-Software-PRO-Edition-24.Q4-WinSvr2022-For-HIP.exe
+        Start-Process hip_installer.exe -ArgumentList '-install' -NoNewWindow -Wait
+
+    - name: Setup hipBLASLt library
+      run: |
+          call "C:/Program Files/AMD/ROCm/6.2/bin/hipcc.bat"
+          cd depend
+          if not exist hipBLASLt (
+            git clone -v --recurse-submodules --depth 1 --no-single-branch --progress --branch release/rocm-rel-6.2.4.1 "https://github.com/ROCm/hipBLASLt"
+          )
+          cd hipBLASLt
+          :: git checkout release/rocm-rel-6.2.4.1
+          cmake -S . -B build -G Ninja -Wno-dev -D CMAKE_BUILD_TYPE=Release -D BUILD_DOCS=OFF -D BUILD_CLIENTS_BENCHMARKS=OFF -D BUILD_CLIENTS_SAMPLES=OFF -D BUILD_CLIENTS_TESTS=OFF -D BUILD_VERBOSE=OFF -D BUILD_SHARED_LIBS=ON
+          cmake --build build --verbose
+          cmake --install build --prefix ../install
+
     - name: Setup Half library
       if: steps.cache-depend.outputs.cache-hit != 'true'
       run: |
@@ -107,18 +134,6 @@ jobs:
           cmake -S . -B build_rel -G Ninja -D CMAKE_BUILD_TYPE=Release -D protobuf_BUILD_TESTS=OFF -D protobuf_MSVC_STATIC_RUNTIME=ON -Wno-dev
           cmake --build build_rel --verbose
           cmake --install build_rel --prefix ../install
-
-    - name: Setup hipBLASLt library
-      run: |
-          cd depend
-          if not exist hipBLASLt (
-            git clone -v --recurse-submodules --depth 1 --no-single-branch --progress --branch release/rocm-rel-6.2.4.1 "https://github.com/ROCm/hipBLASLt"
-          )
-          cd hipBLASLt
-          :: git checkout release/rocm-rel-6.2.4.1
-          cmake -S . -B build -G Ninja -Wno-dev -D CMAKE_BUILD_TYPE=Release -D BUILD_DOCS=OFF -D BUILD_CLIENTS_BENCHMARKS=OFF -D BUILD_CLIENTS_SAMPLES=OFF -D BUILD_CLIENTS_TESTS=OFF -D BUILD_VERBOSE=OFF -D BUILD_SHARED_LIBS=ON
-          cmake --build build --verbose
-          cmake --install build --prefix ../install
     
     # 针对 rocMLIR 的缓存步骤
     - name: Cache rocMLIR build artifacts
@@ -148,20 +163,6 @@ jobs:
         cmake -S . -B build -G Ninja -D CMAKE_BUILD_TYPE=Release -D CMAKE_PREFIX_PATH="%cd%/../install" -D BUILD_FAT_LIBROCKCOMPILER=ON -D CMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded -Wno-dev
         cmake --build build
         cmake --install build --prefix ../install
-
-    - name: Cache HIP SDK
-      id: cache-hip
-      uses: actions/cache@v4
-      with:
-        path: C:\Program Files\AMD\ROCM
-        key: ${{ runner.os }}-rocm-6.2.4
-
-    - name: Setup HIP
-      if: steps.cache-hip.outputs.cache-hit != 'true'
-      shell: pwsh
-      run: |
-        curl -s -o hip_installer.exe -L https://download.amd.com/developer/eula/rocm-hub/AMD-Software-PRO-Edition-24.Q4-WinSvr2022-For-HIP.exe
-        Start-Process hip_installer.exe -ArgumentList '-install' -NoNewWindow -Wait
 
     - name: Setup MIGraphX
       run: cmake -S . -B build -G Ninja -LA -Wno-dev
