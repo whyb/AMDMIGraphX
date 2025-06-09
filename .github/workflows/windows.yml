@@ -108,6 +108,18 @@ jobs:
           cmake --build build_rel --verbose
           cmake --install build_rel --prefix ../install
 
+    - name: Setup hipBLASLt library
+      run: |
+          cd depend
+          if not exist hipBLASLt (
+            git clone -v --recurse-submodules --depth 1 --no-single-branch --progress --branch release/rocm-rel-6.2.4.1 "https://github.com/ROCm/hipBLASLt"
+          )
+          cd hipBLASLt
+          :: git checkout release/rocm-rel-6.2.4.1
+          cmake -S . -B build -G Ninja -Wno-dev -D CMAKE_BUILD_TYPE=Release -D BUILD_DOCS=OFF -D BUILD_CLIENTS_BENCHMARKS=OFF -D BUILD_CLIENTS_SAMPLES=OFF -D BUILD_CLIENTS_TESTS=OFF -D BUILD_VERBOSE=OFF -D BUILD_SHARED_LIBS=ON
+          cmake --build build --verbose
+          cmake --install build --prefix ../install
+    
     # 针对 rocMLIR 的缓存步骤
     - name: Cache rocMLIR build artifacts
       id: cache-rocmlir
