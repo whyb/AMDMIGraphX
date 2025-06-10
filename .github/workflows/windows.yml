@@ -56,6 +56,7 @@ jobs:
     - name: Set ROCm environment
       run: |
         call "C:/Program Files/AMD/ROCm/6.2/bin/hipcc.bat"
+        call "C:/Program Files/AMD/ROCm/6.2/bin/hipconfig.bat"
         echo "C:/Program Files/AMD/ROCm/6.2/bin" >> $GITHUB_PATH
         set PATH=C:\Program Files\AMD\ROCm\6.2\bin;%PATH%
 
@@ -67,7 +68,7 @@ jobs:
           )
           cd hipBLASLt
           :: git checkout release/rocm-rel-6.2.4.1
-          cmake -S . -B build -G Ninja -Wno-dev -D CMAKE_BUILD_TYPE=Release -D CMAKE_C_COMPILER="C:/Program Files/AMD/ROCm/6.2/bin/clang.exe" -D CMAKE_CXX_COMPILER="C:/Program Files/AMD/ROCm/6.2/bin/clang++.exe" -D ROCM_DIR="C:/Program Files/AMD/ROCm/6.2/lib/cmake/hip" -D hip_DIR="C:/Program Files/AMD/ROCm/6.2/lib/cmake/hip" -D hiprtc_DIR="C:/Program Files/AMD/ROCm/6.2/lib/cmake/hiprtc" -D HIP_PLATFORM=amd -D BUILD_DOCS=OFF -D BUILD_CLIENTS_BENCHMARKS=OFF -D BUILD_CLIENTS_SAMPLES=OFF -D BUILD_CLIENTS_TESTS=OFF -D BUILD_VERBOSE=OFF -D BUILD_SHARED_LIBS=ON
+          cmake -S . -B build -G Ninja -Wno-dev -D CMAKE_BUILD_TYPE=Release -D CMAKE_C_COMPILER="C:/Program Files/AMD/ROCm/6.2/bin/clang.exe" -D CMAKE_CXX_COMPILER="C:/Program Files/AMD/ROCm/6.2/bin/clang++.exe" -D ROCM_DIR="C:/Program Files/AMD/ROCm/6.2/lib/cmake/hip" -D HIP_PATH="C:/Program Files/AMD/ROCm/6.2/lib/cmake/hip" -D HIPRTC_DIR="C:/Program Files/AMD/ROCm/6.2/lib/cmake/hiprtc" -D HIP_PLATFORM=amd -D BUILD_DOCS=OFF -D BUILD_CLIENTS_BENCHMARKS=OFF -D BUILD_CLIENTS_SAMPLES=OFF -D BUILD_CLIENTS_TESTS=OFF -D BUILD_VERBOSE=OFF -D BUILD_SHARED_LIBS=ON
           cmake --build build --verbose
           cmake --install build --prefix ../install
 
