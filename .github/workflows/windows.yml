@@ -57,10 +57,10 @@ jobs:
     - name: Set ROCm environment
       run: |
         dir "C:\Program Files\AMD\ROCm\6.2\lib\cmake\hip" /s
+        set "PATH=C:\Program Files\AMD\ROCm\6.2\bin;%PATH%"
         call "C:/Program Files/AMD/ROCm/6.2/bin/hipcc.bat"
         call "C:/Program Files/AMD/ROCm/6.2/bin/hipconfig.bat"
         echo "C:/Program Files/AMD/ROCm/6.2/bin" >> $GITHUB_PATH
-        set PATH=C:\Program Files\AMD\ROCm\6.2\bin;%PATH%
 
     - name: Setup hipBLASLt library
       run: |
