@@ -51,8 +51,17 @@ jobs:
       shell: pwsh
       #REM curl -s -o hip_installer.exe -L https://download.amd.com/developer/eula/rocm-hub/AMD-Software-PRO-Edition-24.Q4-WinSvr2022-For-HIP.exe
       run: |
-        curl -s -o hip_installer.exe -L https://download.amd.com/developer/eula/rocm-hub/AMD-Software-PRO-Edition-24.Q4-Win10-Win11-For-HIP.exe
-        Start-Process hip_installer.exe -ArgumentList '-install' -NoNewWindow -Wait
+        $InstallerUrl = 'https://download.amd.com/developer/eula/rocm-hub/AMD-Software-PRO-Edition-24.Q4-Win10-Win11-For-HIP.exe'
+        $InstallerPath = "$env:RUNNER_TEMP\hip_installer.exe"
+        Invoke-WebRequest -Uri $InstallerUrl -OutFile $InstallerPath
+        $TargetDir = "F:\AMD\ROCm\6.2\"
+        New-Item -ItemType Directory -Force -Path $TargetDir | Out-Null
+        Start-Process $InstallerPath -ArgumentList "-INSTALL", "-USE `"$TargetDir`"" -NoNewWindow -Wait
+        dir F:\AMD\ROCm\
+        dir F:\AMD\ROCm\6.2\
+        dir F:\AMD\ROCm\6.2\bin
+        dir F:\AMD\ROCm\6.2\6.2\
+        dir F:\AMD\ROCm\6.2\ROCm\
 
     - name: Set ROCm environment
       run: |
@@ -110,7 +119,8 @@ jobs:
           :: git checkout release/rocm-rel-6.2.4.1
           call "C:\Program Files\AMD\ROCm\6.2\bin\hipcc.bat"
           call "C:\Program Files\AMD\ROCm\6.2\bin\hipconfig.bat"
-          cmake -S . -B build -G Ninja -Wno-dev -D CMAKE_BUILD_TYPE=Release -D CMAKE_C_COMPILER="C:\Program Files\AMD\ROCm\6.2\bin\clang.exe" -D CMAKE_CXX_COMPILER="C:\Program Files\AMD\ROCm\6.2\bin\clang++.exe" -D ROCM_DIR="C:\Program Files\AMD\ROCm\6.2\lib/cmake\hip" -D HIP_PATH="C:\Program Files\AMD\ROCm\6.2\lib\cmake\hip" -D hip_DIR="C:\Program Files\AMD\ROCm\6.2\lib\cmake\hip" -D HIPRTC_DIR="C:\Program Files\AMD\ROCm\6.2\lib\cmake\hiprtc" -D HIPCC_EXECUTABLE="C:\Program Files\AMD\ROCm\6.2\bin\hipcc.exe" -D HIP_PLATFORM=amd -D BUILD_DOCS=OFF -D BUILD_CLIENTS_BENCHMARKS=OFF -D BUILD_CLIENTS_SAMPLES=OFF -D BUILD_CLIENTS_TESTS=OFF -D BUILD_VERBOSE=OFF -D BUILD_SHARED_LIBS=ON -D CMAKE_PREFIX_PATH="C:\Program Files\AMD\ROCm\6.2\lib\cmake\hip" -D msgpack_DIR="D:\a\AMDMIGraphX\AMDMIGraphX\depend\install\lib\cmake\msgpack" -D rocblas_DIR="C:\Program Files\AMD\ROCm\6.2\lib\cmake\rocblas" -D hipblas_DIR="C:\Program Files\AMD\ROCm\6.2\lib\cmake\hipblas"
+          
+          cmake -S . -B build -G Ninja -Wno-dev -D CMAKE_BUILD_TYPE=Release -D CMAKE_C_COMPILER="C:\Program Files\AMD\ROCm\6.2\bin\clang.exe" -D CMAKE_CXX_COMPILER="C:\Program Files\AMD\ROCm\6.2\bin\clang++.exe" -D ROCM_DIR="C:\Program Files\AMD\ROCm\6.2\lib/cmake\hip" -D HIP_PATH="C:\Program Files\AMD\ROCm\6.2\lib\cmake\hip" -D hip_DIR="C:\Program Files\AMD\ROCm\6.2\lib\cmake\hip" -D HIP_PLATFORM=amd -D BUILD_DOCS=OFF -D BUILD_CLIENTS_BENCHMARKS=OFF -D BUILD_CLIENTS_SAMPLES=OFF -D BUILD_CLIENTS_TESTS=OFF -D BUILD_VERBOSE=OFF -D BUILD_SHARED_LIBS=ON -D CMAKE_PREFIX_PATH="C:\Program Files\AMD\ROCm\6.2\lib\cmake\hip" -D msgpack_DIR="D:\a\AMDMIGraphX\AMDMIGraphX\depend\install\lib\cmake\msgpack" -D hipblas_DIR="C:\Program Files\AMD\ROCm\6.2\lib\cmake\hipblas"
           cmake --build build --verbose
           cmake --install build --prefix ..\install
 
