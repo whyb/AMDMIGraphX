@@ -56,12 +56,11 @@ jobs:
         Invoke-WebRequest -Uri $InstallerUrl -OutFile $InstallerPath
         $TargetDir = "D:\AMD\ROCm\6.2\"
         New-Item -ItemType Directory -Force -Path $TargetDir | Out-Null
-        Start-Process $InstallerPath -ArgumentList "-INSTALL", "-USE `"$TargetDir`"" -NoNewWindow -Wait
+        Start-Process $InstallerPath -ArgumentList "-INSTALL", "-USE D:\AMD\ROCm\6.2\", "-OUTPUT screen", "-LOG D:\AMD\ROCm\6.2\setup.log" -NoNewWindow -Wait
+        Get-Content "D:\AMD\ROCm\6.2\setup.log"
         dir D:\AMD\ROCm\
         dir D:\AMD\ROCm\6.2\
         dir D:\AMD\ROCm\6.2\bin
-        dir D:\AMD\ROCm\6.2\6.2\
-        dir D:\AMD\ROCm\6.2\ROCm\
 
     - name: Set ROCm environment
       run: |
