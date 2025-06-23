@@ -60,7 +60,7 @@ jobs:
         Get-Content "D:\AMD\ROCm\6.2\setup.log"
         dir D:\AMD\ROCm\
         dir D:\AMD\ROCm\6.2\
-        Copy-Item "C:\Program Files\AMD\ROCm\6.2" -Destination "D:\AMD\ROCm\6.2" -Recurse -Force
+        Copy-Item "C:\Program Files\AMD\ROCm\6.2\" -Destination "D:\AMD\ROCm\" -Recurse -Force
         dir D:\AMD\ROCm\6.2\bin
 
     - name: Set ROCm environment
