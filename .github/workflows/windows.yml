@@ -56,18 +56,19 @@ jobs:
         Invoke-WebRequest -Uri $InstallerUrl -OutFile $InstallerPath
         $TargetDir = "D:\AMD\ROCm\6.2\"
         New-Item -ItemType Directory -Force -Path $TargetDir | Out-Null
-        Start-Process $InstallerPath -ArgumentList "-INSTALL", "-USE D:\AMD\ROCm\6.2\", "-OUTPUT screen", "-LOG D:\AMD\ROCm\6.2\setup.log" -NoNewWindow -Wait
+        Start-Process $InstallerPath -ArgumentList "-INSTALL", "-OUTPUT screen", "-LOG D:\AMD\ROCm\6.2\setup.log" -NoNewWindow -Wait
         Get-Content "D:\AMD\ROCm\6.2\setup.log"
         dir D:\AMD\ROCm\
         dir D:\AMD\ROCm\6.2\
+        Copy-Item "C:\Program Files\AMD\ROCm\6.2" -Destination "D:\AMD\ROCm\6.2" -Recurse -Force
         dir D:\AMD\ROCm\6.2\bin
 
     - name: Set ROCm environment
       run: |
-        set "PATH=C:\Program Files\AMD\ROCm\6.2\bin;%PATH%"
-        call "C:\Program Files\AMD\ROCm\6.2\bin\hipcc.bat"
-        call "C:\Program Files\AMD\ROCm\6.2\bin\hipconfig.bat"
-        echo "C:\Program Files\AMD\ROCm\6.2\bin" >> $GITHUB_PATH
+        set "PATH=D:\AMD\ROCm\6.2\bin;%PATH%"
+        call "D:\AMD\ROCm\6.2\bin\hipcc.bat"
+        call "D:\AMD\ROCm\6.2\bin\hipconfig.bat"
+        echo "D:\AMD\ROCm\6.2\bin" >> $GITHUB_PATH
 
     - name: Setup Half library
       if: steps.cache-depend.outputs.cache-hit != 'true'
@@ -116,10 +117,10 @@ jobs:
           )
           cd hipBLASLt
           :: git checkout release/rocm-rel-6.2.4.1
-          call "C:\Program Files\AMD\ROCm\6.2\bin\hipcc.bat"
-          call "C:\Program Files\AMD\ROCm\6.2\bin\hipconfig.bat"
+          call "D:\AMD\ROCm\6.2\bin\hipcc.bat"
+          call "D:\AMD\ROCm\6.2\bin\hipconfig.bat"
           
-          cmake -S . -B build -G Ninja -Wno-dev -D CMAKE_BUILD_TYPE=Release -D CMAKE_C_COMPILER="C:\Program Files\AMD\ROCm\6.2\bin\clang.exe" -D CMAKE_CXX_COMPILER="C:\Program Files\AMD\ROCm\6.2\bin\clang++.exe" -D ROCM_DIR="C:\Program Files\AMD\ROCm\6.2\lib/cmake\hip" -D HIP_PATH="C:\Program Files\AMD\ROCm\6.2\lib\cmake\hip" -D hip_DIR="C:\Program Files\AMD\ROCm\6.2\lib\cmake\hip" -D HIP_PLATFORM=amd -D BUILD_DOCS=OFF -D BUILD_CLIENTS_BENCHMARKS=OFF -D BUILD_CLIENTS_SAMPLES=OFF -D BUILD_CLIENTS_TESTS=OFF -D BUILD_VERBOSE=OFF -D BUILD_SHARED_LIBS=ON -D CMAKE_PREFIX_PATH="C:\Program Files\AMD\ROCm\6.2\lib\cmake\hip" -D msgpack_DIR="D:\a\AMDMIGraphX\AMDMIGraphX\depend\install\lib\cmake\msgpack" -D hipblas_DIR="C:\Program Files\AMD\ROCm\6.2\lib\cmake\hipblas"
+          cmake -S . -B build -G Ninja -Wno-dev -D CMAKE_BUILD_TYPE=Release -D CMAKE_C_COMPILER="D:\AMD\ROCm\6.2\bin\clang.exe" -D CMAKE_CXX_COMPILER="D:\AMD\ROCm\6.2\bin\clang++.exe" -D ROCM_DIR="D:\AMD\ROCm\6.2\lib/cmake\hip" -D HIP_PATH="D:\AMD\ROCm\6.2\lib\cmake\hip" -D hip_DIR="D:\AMD\ROCm\6.2\lib\cmake\hip" -D HIP_PLATFORM=amd -D BUILD_DOCS=OFF -D BUILD_CLIENTS_BENCHMARKS=OFF -D BUILD_CLIENTS_SAMPLES=OFF -D BUILD_CLIENTS_TESTS=OFF -D BUILD_VERBOSE=OFF -D BUILD_SHARED_LIBS=ON -D CMAKE_PREFIX_PATH="D:\AMD\ROCm\6.2\lib\cmake\hip" -D msgpack_DIR="D:\a\AMDMIGraphX\AMDMIGraphX\depend\install\lib\cmake\msgpack" -D hipblas_DIR="D:\AMD\ROCm\6.2\lib\cmake\hipblas"
           cmake --build build --verbose
           cmake --install build --prefix ..\install
 
@@ -185,20 +186,20 @@ jobs:
     - name: Setup MIGraphX
       run: cmake -S . -B build -G Ninja -LA -Wno-dev
         -D CMAKE_BUILD_TYPE=Release
-        -D CMAKE_C_COMPILER="C:\Program Files\AMD\ROCm\6.2\bin\clang.exe"
-        -D CMAKE_CXX_COMPILER="C:\Program Files\AMD\ROCm\6.2\bin\clang++.exe"
+        -D CMAKE_C_COMPILER="D:\AMD\ROCm\6.2\bin\clang.exe"
+        -D CMAKE_CXX_COMPILER="D:\AMD\ROCm\6.2\bin\clang++.exe"
         -D CMAKE_PREFIX_PATH="%cd%/depend/install;C:/vcpkg/packages/sqlite3_x64-windows-static"
         -D BUILD_TESTING=OFF
-        -D hip_DIR="C:\Program Files\AMD\ROCm\6.2\lib\cmake\hip"
-        -D hiprtc_DIR="C:\Program Files\AMD\ROCm\6.2\lib\cmake\hiprtc"
+        -D hip_DIR="D:\AMD\ROCm\6.2\lib\cmake\hip"
+        -D hiprtc_DIR="D:\AMD\ROCm\6.2\lib\cmake\hiprtc"
         -D HIP_PLATFORM=amd
         -D GPU_TARGETS="gfx1030;gfx1031;gfx1032;gfx1100;gfx1101;gfx1102"
         -D CMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
         -D MIGRAPHX_ENABLE_PYTHON=OFF
         -D MIGRAPHX_USE_HIPBLASLT=ON
         -D MIGRAPHX_USE_ROCBLAS=ON
-        -D rocblas_DIR="C:\Program Files\AMD\ROCm\6.2\lib\cmake\rocblas"
-        -D hipblas_DIR="C:\Program Files\AMD\ROCm\6.2\lib\cmake\hipblas"
+        -D rocblas_DIR="D:\AMD\ROCm\6.2\lib\cmake\rocblas"
+        -D hipblas_DIR="D:\AMD\ROCm\6.2\lib\cmake\hipblas"
         -D msgpack_DIR="D:\a\AMDMIGraphX\AMDMIGraphX\depend\install\lib\cmake\msgpack"
 
     - name: Build MIGraphX
