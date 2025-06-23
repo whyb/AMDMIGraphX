@@ -37,7 +37,7 @@ jobs:
         git clone https://github.com/ROCm/rocm-cmake --depth 1
         cd rocm-cmake
         cmake -S . -B build
-        cmake --install build --prefix ../install
+        cmake --install build --prefix ..\install
 
     - name: Cache HIP SDK
       id: cache-hip
@@ -56,11 +56,10 @@ jobs:
 
     - name: Set ROCm environment
       run: |
-        dir "C:\Program Files\AMD\ROCm\6.2\lib\cmake\hip" /s
         set "PATH=C:\Program Files\AMD\ROCm\6.2\bin;%PATH%"
-        call "C:/Program Files/AMD/ROCm/6.2/bin/hipcc.bat"
-        call "C:/Program Files/AMD/ROCm/6.2/bin/hipconfig.bat"
-        echo "C:/Program Files/AMD/ROCm/6.2/bin" >> $GITHUB_PATH
+        call "C:\Program Files\AMD\ROCm\6.2\bin\hipcc.bat"
+        call "C:\Program Files\AMD\ROCm\6.2\bin\hipconfig.bat"
+        echo "C:\Program Files\AMD\ROCm\6.2\bin" >> $GITHUB_PATH
 
     - name: Setup Half library
       if: steps.cache-depend.outputs.cache-hit != 'true'
@@ -68,8 +67,8 @@ jobs:
         cd depend
         git clone -v --recurse-submodules --depth 1 --no-single-branch --progress "https://github.com/ROCm/half"
         cd half
-        cmake -S . -B build -D CMAKE_PREFIX_PATH="%cd%/../install"
-        cmake --install build --prefix ../install
+        cmake -S . -B build -D CMAKE_PREFIX_PATH="%cd%/..\install"
+        cmake --install build --prefix ..\install
 
     - name: Setup json library
       if: steps.cache-depend.outputs.cache-hit != 'true'
@@ -80,7 +79,7 @@ jobs:
         :: follows https://github.com/AmusementClub/AMDMIGraphX/blob/develop/requirements.txt
         :: git checkout v3.8.0
         cmake -S . -B build -D BUILD_TESTING=OFF -Wno-dev
-        cmake --install build --prefix ../install
+        cmake --install build --prefix ..\install
 
     - name: Setup SQLite3 library
       if: steps.cache-depend.outputs.cache-hit != 'true'
@@ -98,7 +97,7 @@ jobs:
         python -c "f=open('CMakeLists.txt');lines=f.readlines();lines[0]='cmake_minimum_required(VERSION 3.15)\n';f.close();f=open('CMakeLists.txt','w');f.writelines(lines);f.close()"
         cmake -S . -B build -G Ninja -D CMAKE_BUILD_TYPE=Release -D MSGPACK_BUILD_TESTS=OFF -D MSGPACK_BUILD_EXAMPLES=OFF -D CMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded -Wno-dev
         cmake --build build --verbose
-        cmake --install build --prefix ../install
+        cmake --install build --prefix ..\install
         xcopy include\ ..\install\include\ /s /f /y
 
     - name: Setup hipBLASLt library
@@ -109,9 +108,11 @@ jobs:
           )
           cd hipBLASLt
           :: git checkout release/rocm-rel-6.2.4.1
-          cmake -S . -B build -G Ninja -Wno-dev -D CMAKE_BUILD_TYPE=Release -D CMAKE_C_COMPILER="C:/Program Files/AMD/ROCm/6.2/bin/clang.exe" -D CMAKE_CXX_COMPILER="C:/Program Files/AMD/ROCm/6.2/bin/clang++.exe" -D ROCM_DIR="C:/Program Files/AMD/ROCm/6.2/lib/cmake/hip" -D HIP_PATH="C:/Program Files/AMD/ROCm/6.2/lib/cmake/hip" -D hip_DIR="C:/Program Files/AMD/ROCm/6.2/lib/cmake/hip" -D HIPRTC_DIR="C:/Program Files/AMD/ROCm/6.2/lib/cmake/hiprtc" -D HIP_PLATFORM=amd -D BUILD_DOCS=OFF -D BUILD_CLIENTS_BENCHMARKS=OFF -D BUILD_CLIENTS_SAMPLES=OFF -D BUILD_CLIENTS_TESTS=OFF -D BUILD_VERBOSE=OFF -D BUILD_SHARED_LIBS=ON -D CMAKE_PREFIX_PATH="C:/Program Files/AMD/ROCm/6.2/lib/cmake/hip" -D msgpack_DIR="D:\a\AMDMIGraphX\AMDMIGraphX\depend\install\lib\cmake\msgpack" -D rocblas_DIR="C:/Program Files/AMD/ROCm/6.2/lib/cmake/rocblas" -D hipblas_DIR="C:/Program Files/AMD/ROCm/6.2/lib/cmake/hipblas"
+          call "C:\Program Files\AMD\ROCm\6.2\bin\hipcc.bat"
+          call "C:\Program Files\AMD\ROCm\6.2\bin\hipconfig.bat"
+          cmake -S . -B build -G Ninja -Wno-dev -D CMAKE_BUILD_TYPE=Release -D CMAKE_C_COMPILER="C:\Program Files\AMD\ROCm\6.2\bin\clang.exe" -D CMAKE_CXX_COMPILER="C:\Program Files\AMD\ROCm\6.2\bin\clang++.exe" -D ROCM_DIR="C:\Program Files\AMD\ROCm\6.2\lib/cmake\hip" -D HIP_PATH="C:\Program Files\AMD\ROCm\6.2\lib\cmake\hip" -D hip_DIR="C:\Program Files\AMD\ROCm\6.2\lib\cmake\hip" -D HIPRTC_DIR="C:\Program Files\AMD\ROCm\6.2\lib\cmake\hiprtc" -D HIPCC_EXECUTABLE="C:\Program Files\AMD\ROCm\6.2\bin\hipcc.exe" -D HIP_PLATFORM=amd -D BUILD_DOCS=OFF -D BUILD_CLIENTS_BENCHMARKS=OFF -D BUILD_CLIENTS_SAMPLES=OFF -D BUILD_CLIENTS_TESTS=OFF -D BUILD_VERBOSE=OFF -D BUILD_SHARED_LIBS=ON -D CMAKE_PREFIX_PATH="C:\Program Files\AMD\ROCm\6.2\lib\cmake\hip" -D msgpack_DIR="D:\a\AMDMIGraphX\AMDMIGraphX\depend\install\lib\cmake\msgpack" -D rocblas_DIR="C:\Program Files\AMD\ROCm\6.2\lib\cmake\rocblas" -D hipblas_DIR="C:\Program Files\AMD\ROCm\6.2\lib\cmake\hipblas"
           cmake --build build --verbose
-          cmake --install build --prefix ../install
+          cmake --install build --prefix ..\install
 
     # 缓存 Protobuf 的构建产物
     - name: Cache Protobuf build artifacts
@@ -141,7 +142,7 @@ jobs:
           :: git checkout v3.21.12
           cmake -S . -B build_rel -G Ninja -D CMAKE_BUILD_TYPE=Release -D protobuf_BUILD_TESTS=OFF -D protobuf_MSVC_STATIC_RUNTIME=ON -Wno-dev
           cmake --build build_rel --verbose
-          cmake --install build_rel --prefix ../install
+          cmake --install build_rel --prefix ..\install
     
     # 针对 rocMLIR 的缓存步骤
     - name: Cache rocMLIR build artifacts
@@ -168,27 +169,27 @@ jobs:
         )
         cd rocMLIR
         git checkout 13065c4b3a216e1b13dfb8f746b8a0d421f124e8
-        cmake -S . -B build -G Ninja -D CMAKE_BUILD_TYPE=Release -D CMAKE_PREFIX_PATH="%cd%/../install" -D BUILD_FAT_LIBROCKCOMPILER=ON -D CMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded -Wno-dev
+        cmake -S . -B build -G Ninja -D CMAKE_BUILD_TYPE=Release -D CMAKE_PREFIX_PATH="%cd%/..\install" -D BUILD_FAT_LIBROCKCOMPILER=ON -D CMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded -Wno-dev
         cmake --build build
-        cmake --install build --prefix ../install
+        cmake --install build --prefix ..\install
 
     - name: Setup MIGraphX
       run: cmake -S . -B build -G Ninja -LA -Wno-dev
         -D CMAKE_BUILD_TYPE=Release
-        -D CMAKE_C_COMPILER="C:/Program Files/AMD/ROCm/6.2/bin/clang.exe"
-        -D CMAKE_CXX_COMPILER="C:/Program Files/AMD/ROCm/6.2/bin/clang++.exe"
+        -D CMAKE_C_COMPILER="C:\Program Files\AMD\ROCm\6.2\bin\clang.exe"
+        -D CMAKE_CXX_COMPILER="C:\Program Files\AMD\ROCm\6.2\bin\clang++.exe"
         -D CMAKE_PREFIX_PATH="%cd%/depend/install;C:/vcpkg/packages/sqlite3_x64-windows-static"
         -D BUILD_TESTING=OFF
-        -D hip_DIR="C:/Program Files/AMD/ROCm/6.2/lib/cmake/hip"
-        -D hiprtc_DIR="C:/Program Files/AMD/ROCm/6.2/lib/cmake/hiprtc"
+        -D hip_DIR="C:\Program Files\AMD\ROCm\6.2\lib\cmake\hip"
+        -D hiprtc_DIR="C:\Program Files\AMD\ROCm\6.2\lib\cmake\hiprtc"
         -D HIP_PLATFORM=amd
         -D GPU_TARGETS="gfx1030;gfx1031;gfx1032;gfx1100;gfx1101;gfx1102"
         -D CMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
         -D MIGRAPHX_ENABLE_PYTHON=OFF
         -D MIGRAPHX_USE_HIPBLASLT=ON
         -D MIGRAPHX_USE_ROCBLAS=ON
-        -D rocblas_DIR="C:/Program Files/AMD/ROCm/6.2/lib/cmake/rocblas"
-        -D hipblas_DIR="C:/Program Files/AMD/ROCm/6.2/lib/cmake/hipblas"
+        -D rocblas_DIR="C:\Program Files\AMD\ROCm\6.2\lib\cmake\rocblas"
+        -D hipblas_DIR="C:\Program Files\AMD\ROCm\6.2\lib\cmake\hipblas"
         -D msgpack_DIR="D:\a\AMDMIGraphX\AMDMIGraphX\depend\install\lib\cmake\msgpack"
 
     - name: Build MIGraphX
