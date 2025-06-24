@@ -116,7 +116,7 @@ jobs:
             git clone -v --recurse-submodules --depth 1 --no-single-branch --progress --branch release/rocm-rel-6.2.4.1 "https://github.com/whyb/hipBLASLt"
           )
           cd hipBLASLt
-          :: git checkout release/rocm-rel-6.2.4.1-win
+          git checkout release/rocm-rel-6.2.4.1-win
           call "D:\AMD\ROCm\6.2\bin\hipcc.bat"
           call "D:\AMD\ROCm\6.2\bin\hipconfig.bat"
           
