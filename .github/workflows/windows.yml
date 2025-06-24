@@ -113,7 +113,7 @@ jobs:
       run: |
           cd depend
           if not exist hipBLASLt (
-            git clone -v --recurse-submodules --depth 1 --no-single-branch --progress --branch release/rocm-rel-6.2.4.1 "https://github.com/whyb/hipBLASLt"
+            git clone -v --recurse-submodules --depth 1 --no-single-branch --progress --branch release/rocm-rel-6.2.4.1-win "https://github.com/whyb/hipBLASLt"
           )
           cd hipBLASLt
           git checkout release/rocm-rel-6.2.4.1-win
