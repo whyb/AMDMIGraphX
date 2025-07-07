@@ -142,6 +142,8 @@ jobs:
             -D hip_DIR="/d/AMD/ROCm/6.2/lib/cmake/hip" \
             -D HIP_PLATFORM=amd \
             -D TENSILELITE_PATH="${TENS_SRC}" \
+            -D BUILD_WITH_TENSILE=OFF \
+            -D BUILD_CLIENTS_PYTHON=OFF \
             -D BUILD_DOCS=OFF \
             -D BUILD_CLIENTS_BENCHMARKS=OFF \
             -D BUILD_CLIENTS_SAMPLES=OFF \
