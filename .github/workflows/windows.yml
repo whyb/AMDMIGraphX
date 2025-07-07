@@ -28,7 +28,6 @@ jobs:
           mingw-w64-x86_64-ninja
           git
           mingw-w64-x86_64-python3
-          mingw-w64-x86_64-python3-pip
 
     - name: Cache dependencies
       id: cache-depend
