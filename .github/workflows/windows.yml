@@ -122,16 +122,13 @@ jobs:
     - name: Setup hipBLASLt library
       shell: msys2 {0}
       run: |
+          uname -a
           cd depend
           if not exist hipBLASLt (
             git clone -v --recurse-submodules --depth 1 --no-single-branch --progress --branch release/rocm-rel-6.2.4.1 "https://github.com/whyb/hipBLASLt"
           )
           cd hipBLASLt
           git checkout release/rocm-rel-6.2.4.1
-
-          chmod +x /d/AMD/ROCm/6.2/bin/hipcc /d/AMD/ROCm/6.2/bin/hipconfig
-          /d/AMD/ROCm/6.2/bin/hipcc
-          /d/AMD/ROCm/6.2/bin/hipconfig
           
           cmake -S . -B build -G Ninja -Wno-dev \
             -D CMAKE_BUILD_TYPE=Release \
