@@ -27,6 +27,8 @@ jobs:
           mingw-w64-x86_64-cmake
           mingw-w64-x86_64-ninja
           git
+          mingw-w64-x86_64-python3
+          mingw-w64-x86_64-python3-pip
 
     - name: Cache dependencies
       id: cache-depend
@@ -125,10 +127,11 @@ jobs:
       run: |
           cd depend
           if [ ! -d hipBLASLt ]; then
-            git clone -v --recurse-submodules --depth 1 --branch release/rocm-rel-6.2.4.1 https://github.com/whyb/hipBLASLt
+            git clone -v --recurse-submodules --depth 1 --branch release/rocm-rel-6.2.4.1-msys2 https://github.com/whyb/hipBLASLt
           fi
           cd hipBLASLt
-          git checkout release/rocm-rel-6.2.4.1
+          git checkout release/rocm-rel-6.2.4.1-msys2
+          TENSEL_SRC=$(cygpath -u "${GITHUB_WORKSPACE}/depend/hipBLASLt/tensilelite")
           
           cmake -S . -B build -G Ninja -Wno-dev \
             -D CMAKE_BUILD_TYPE=Release \
@@ -139,6 +142,7 @@ jobs:
             -D HIP_PATH="/d/AMD/ROCm/6.2/lib/cmake/hip" \
             -D hip_DIR="/d/AMD/ROCm/6.2/lib/cmake/hip" \
             -D HIP_PLATFORM=amd \
+            -D TENSLITE_PATH="${TENSEL_SRC}"
             -D BUILD_DOCS=OFF \
             -D BUILD_CLIENTS_BENCHMARKS=OFF \
             -D BUILD_CLIENTS_SAMPLES=OFF \
