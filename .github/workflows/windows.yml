@@ -17,6 +17,16 @@ jobs:
     - name: Setup MSVC
       uses: ilammy/msvc-dev-cmd@v1
 
+    - name: Setup MSYS2
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: MINGW64
+        update: true
+        install: |
+          mingw-w64-x86_64-toolchain
+          mingw-w64-x86_64-cmake
+          mingw-w64-x86_64-ninja
+
     - name: Cache dependencies
       id: cache-depend
       uses: actions/cache@v4
@@ -110,17 +120,35 @@ jobs:
         xcopy include\ ..\install\include\ /s /f /y
 
     - name: Setup hipBLASLt library
+      shell: msys2 {0}
       run: |
           cd depend
           if not exist hipBLASLt (
-            git clone -v --recurse-submodules --depth 1 --no-single-branch --progress --branch release/rocm-rel-6.2.4.1-win "https://github.com/whyb/hipBLASLt"
+            git clone -v --recurse-submodules --depth 1 --no-single-branch --progress --branch release/rocm-rel-6.2.4.1 "https://github.com/whyb/hipBLASLt"
           )
           cd hipBLASLt
-          git checkout release/rocm-rel-6.2.4.1-win
-          call "D:\AMD\ROCm\6.2\bin\hipcc.bat"
-          call "D:\AMD\ROCm\6.2\bin\hipconfig.bat"
+          git checkout release/rocm-rel-6.2.4.1
+
+          chmod +x /d/AMD/ROCm/6.2/bin/hipcc /d/AMD/ROCm/6.2/bin/hipconfig
+          /d/AMD/ROCm/6.2/bin/hipcc
+          /d/AMD/ROCm/6.2/bin/hipconfig
           
-          cmake -S . -B build -G Ninja -Wno-dev -D CMAKE_BUILD_TYPE=Release -D CMAKE_C_COMPILER="D:\AMD\ROCm\6.2\bin\clang.exe" -D CMAKE_CXX_COMPILER="D:\AMD\ROCm\6.2\bin\clang++.exe" -D ROCM_DIR="D:\AMD\ROCm\6.2\lib/cmake\hip" -D HIP_PATH="D:\AMD\ROCm\6.2\lib\cmake\hip" -D hip_DIR="D:\AMD\ROCm\6.2\lib\cmake\hip" -D HIP_PLATFORM=amd -D BUILD_DOCS=OFF -D BUILD_CLIENTS_BENCHMARKS=OFF -D BUILD_CLIENTS_SAMPLES=OFF -D BUILD_CLIENTS_TESTS=OFF -D BUILD_VERBOSE=OFF -D BUILD_SHARED_LIBS=ON -D CMAKE_PREFIX_PATH="D:\AMD\ROCm\6.2\lib\cmake\hip" -D msgpack_DIR="D:\a\AMDMIGraphX\AMDMIGraphX\depend\install\lib\cmake\msgpack" -D hipblas_DIR="D:\AMD\ROCm\6.2\lib\cmake\hipblas"
+          cmake -S . -B build -G Ninja -Wno-dev \
+            -D CMAKE_BUILD_TYPE=Release \
+            -D CMAKE_C_COMPILER="/d/AMD/ROCm/6.2/bin/clang.exe" \
+            -D CMAKE_CXX_COMPILER="/d/AMD/ROCm/6.2/bin/clang++.exe" \
+            -D ROCM_DIR="/d/AMD/ROCm/6.2/lib/cmake/hip" \
+            -D HIP_PATH="/d/AMD/ROCm/6.2/lib/cmake/hip" \
+            -D hip_DIR="/d/AMD/ROCm/6.2/lib/cmake/hip" \
+            -D HIP_PLATFORM=amd \
+            -D BUILD_DOCS=OFF \
+            -D BUILD_CLIENTS_BENCHMARKS=OFF \
+            -D BUILD_CLIENTS_SAMPLES=OFF \
+            -D BUILD_CLIENTS_TESTS=OFF \
+            -D BUILD_VERBOSE=OFF \
+            -D BUILD_SHARED_LIBS=ON \
+            -D CMAKE_PREFIX_PATH="/d/a/AMDMIGraphX/AMDMIGraphX/depend/install/lib/cmake/msgpack" \
+            -D hipblas_DIR="/d/AMD/ROCm/6.2/lib/cmake/hipblas"
           cmake --build build --config Release --verbose
           cmake --install build --config Release --prefix ..\install
 
