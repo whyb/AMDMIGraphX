@@ -130,7 +130,7 @@ jobs:
           fi
           cd hipBLASLt
           git checkout release/rocm-rel-6.2.4.1-msys2
-          TENSEL_SRC=$(cygpath -u "${GITHUB_WORKSPACE}/depend/hipBLASLt/tensilelite")
+          TENS_SRC=$(cygpath -u "${GITHUB_WORKSPACE}/depend/hipBLASLt/tensilelite")
           
           cmake -S . -B build -G Ninja -Wno-dev \
             -D CMAKE_BUILD_TYPE=Release \
@@ -141,7 +141,7 @@ jobs:
             -D HIP_PATH="/d/AMD/ROCm/6.2/lib/cmake/hip" \
             -D hip_DIR="/d/AMD/ROCm/6.2/lib/cmake/hip" \
             -D HIP_PLATFORM=amd \
-            -D TENSLITE_PATH="${TENSEL_SRC}" \
+            -D TENSILELITE_PATH="${TENS_SRC}" \
             -D BUILD_DOCS=OFF \
             -D BUILD_CLIENTS_BENCHMARKS=OFF \
             -D BUILD_CLIENTS_SAMPLES=OFF \
