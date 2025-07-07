@@ -134,6 +134,7 @@ jobs:
             -D CMAKE_BUILD_TYPE=Release \
             -D CMAKE_C_COMPILER="/d/AMD/ROCm/6.2/bin/clang.exe" \
             -D CMAKE_CXX_COMPILER="/d/AMD/ROCm/6.2/bin/clang++.exe" \
+            -D CMAKE_RC_COMPILER=windres \
             -D ROCM_DIR="/d/AMD/ROCm/6.2/lib/cmake/hip" \
             -D HIP_PATH="/d/AMD/ROCm/6.2/lib/cmake/hip" \
             -D hip_DIR="/d/AMD/ROCm/6.2/lib/cmake/hip" \
