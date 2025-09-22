@@ -124,41 +124,42 @@ jobs:
         cmake --install build --config Release --prefix ..\install
         xcopy include\ ..\install\include\ /s /f /y
 
-    - name: Setup hipBLASLt library
-      shell: bash
-      run: |
-        set -e
-        cd depend
-        if [ ! -d hipBLASLt ]; then
-          git clone -v --recurse-submodules --depth 1 --branch release/rocm-rel-6.4.2-win https://github.com/whyb/hipBLASLt
-        fi
-        cd hipBLASLt
-
-        TENS_SRC="${GITHUB_WORKSPACE}/depend/hipBLASLt/tensilelite"
-
-        cmake -S . -B build -G Ninja -Wno-dev \
-          -D CMAKE_BUILD_TYPE=Release \
-          -D CMAKE_C_COMPILER="D:/AMD/ROCm/6.4/bin/clang.exe" \
-          -D CMAKE_CXX_COMPILER="D:/AMD/ROCm/6.4/bin/clang++.exe" \
-          -D CMAKE_RC_COMPILER=windres \
-          -D ROCM_DIR="D:/AMD/ROCm/6.4/lib/cmake/hip" \
-          -D HIP_PATH="D:/AMD/ROCm/6.4/lib/cmake/hip" \
-          -D hip_DIR="D:/AMD/ROCm/6.4/lib/cmake/hip" \
-          -D HIP_PLATFORM=amd \
-          -D TENSILELITE_PATH="${TENS_SRC}" \
-          -D BUILD_WITH_TENSILE=OFF \
-          -D BUILD_CLIENTS_PYTHON=OFF \
-          -D BUILD_DOCS=OFF \
-          -D BUILD_CLIENTS_BENCHMARKS=OFF \
-          -D BUILD_CLIENTS_SAMPLES=OFF \
-          -D BUILD_CLIENTS_TESTS=OFF \
-          -D BUILD_VERBOSE=OFF \
-          -D BUILD_SHARED_LIBS=ON \
-          -D CMAKE_PREFIX_PATH="D:/a/AMDMIGraphX/AMDMIGraphX/depend/install/lib/cmake/msgpack" \
-          -D hipblas_DIR="D:/AMD/ROCm/6.4/lib/cmake/hipblas"
-
-        cmake --build build --config Release --verbose
-        cmake --install build --config Release --prefix ../install
+    #- name: Setup hipBLASLt library
+    #  shell: bash
+    #  run: |
+    #    set -e
+    #    cd depend
+    #    if [ ! -d hipBLASLt ]; then
+    #      git clone -v --recurse-submodules --depth 1 --branch release/rocm-rel-6.4.2-win https://github.com/whyb/hipBLASLt
+    #    fi
+    #    cd hipBLASLt
+#
+    #    TENS_SRC="${GITHUB_WORKSPACE}/depend/hipBLASLt/tensilelite"
+#
+    #    cmake -S . -B build -G Ninja -Wno-dev \
+    #      -D CMAKE_BUILD_TYPE=Release \
+    #      -D CMAKE_C_COMPILER="D:/AMD/ROCm/6.4/bin/clang.exe" \
+    #      -D CMAKE_CXX_COMPILER="D:/AMD/ROCm/6.4/bin/clang++.exe" \
+    #      -D CMAKE_RC_COMPILER=windres \
+    #      -D ROCM_DIR="D:/AMD/ROCm/6.4/lib/cmake/hip" \
+    #      -D HIP_PATH="D:/AMD/ROCm/6.4/lib/cmake/hip" \
+    #      -D hip_DIR="D:/AMD/ROCm/6.4/lib/cmake/hip" \
+    #      -D hipblas-common_DIR="D:/AMD/ROCm/6.4/lib/cmake/hipblas-common" \
+    #      -D HIP_PLATFORM=amd \
+    #      -D TENSILELITE_PATH="${TENS_SRC}" \
+    #      -D BUILD_WITH_TENSILE=OFF \
+    #      -D BUILD_CLIENTS_PYTHON=OFF \
+    #      -D BUILD_DOCS=OFF \
+    #      -D BUILD_CLIENTS_BENCHMARKS=OFF \
+    #      -D BUILD_CLIENTS_SAMPLES=OFF \
+    #      -D BUILD_CLIENTS_TESTS=OFF \
+    #      -D BUILD_VERBOSE=OFF \
+    #      -D BUILD_SHARED_LIBS=ON \
+    #      -D CMAKE_PREFIX_PATH="D:/a/AMDMIGraphX/AMDMIGraphX/depend/install/lib/cmake/msgpack" \
+    #      -D hipblas_DIR="D:/AMD/ROCm/6.4/lib/cmake/hipblas"
+#
+    #    cmake --build build --config Release --verbose
+    #    cmake --install build --config Release --prefix ../install
 
     # 缓存 Protobuf 的构建产物
     - name: Cache Protobuf build artifacts
@@ -235,6 +236,8 @@ jobs:
         -D MIGRAPHX_USE_ROCBLAS=ON
         -D rocblas_DIR="D:\AMD\ROCm\6.4\lib\cmake\rocblas"
         -D hipblas_DIR="D:\AMD\ROCm\6.4\lib\cmake\hipblas"
+        -D hipblas-common_DIR="D:/AMD/ROCm/6.4/lib/cmake/hipblas-common" \
+        -D hipblaslt_DIR="D:/AMD/ROCm/6.4/lib/cmake/hipblaslt" \
         -D msgpack_DIR="D:\a\AMDMIGraphX\AMDMIGraphX\depend\install\lib\cmake\msgpack"
         -D MIGRAPHX_USE_MIOPEN=OFF
 
