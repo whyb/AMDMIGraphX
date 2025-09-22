@@ -130,7 +130,7 @@ jobs:
         set -e
         cd depend
         if [ ! -d hipBLASLt ]; then
-          git clone -v --recurse-submodules --depth 1 --branch rocm-6.4.2 https://github.com/ROCm/hipBLASLt
+          git clone -v --recurse-submodules --depth 1 --branch release/rocm-rel-6.4.2-win https://github.com/whyb/hipBLASLt
         fi
         cd hipBLASLt
 
@@ -146,7 +146,7 @@ jobs:
           -D hip_DIR="D:/AMD/ROCm/6.4/lib/cmake/hip" \
           -D HIP_PLATFORM=amd \
           -D TENSILELITE_PATH="${TENS_SRC}" \
-          -D BUILD_WITH_TENSILE=ON \
+          -D BUILD_WITH_TENSILE=OFF \
           -D BUILD_CLIENTS_PYTHON=OFF \
           -D BUILD_DOCS=OFF \
           -D BUILD_CLIENTS_BENCHMARKS=OFF \
