@@ -94,6 +94,7 @@ struct miopen_apply
 
         add_extend_op("argmax");
         add_extend_op("argmin");
+        add_extend_op("fixed_pad");
         add_extend_op("logsoftmax");
         add_extend_op("multinomial");
         add_extend_op("nonzero");
@@ -543,44 +544,11 @@ struct miopen_apply
         });
 
         apply_map.emplace("gpu::concat_past_present", [=](instruction_ref ins) {
-            return mod->replace_instruction(
-                ins,
-                make_op("gpu::precompile_op", {{"op", to_value(ins->get_operator())}}),
-                ins->inputs());
-        });
-
-        apply_map.emplace("gpu::compute_attention_probabilities", [=](instruction_ref ins) {
-            auto s          = ins->get_shape();
-            auto output     = insert_allocation(ins, s);
-            auto new_inputs = ins->inputs();
-            new_inputs.push_back(output);
-            return mod->replace_instruction(
-                ins,
-                make_op("gpu::precompile_op", {{"op", to_value(ins->get_operator())}}),
-                new_inputs);
-        });
-
-        apply_map.emplace("gpu::gqa_softmax", [=](instruction_ref ins) {
-            auto s      = ins->get_shape();
-            auto inputs = ins->inputs();
-
-            auto new_inputs = ins->inputs();
-            new_inputs.push_back(inputs.at(2));
-            return mod->replace_instruction(
-                ins,
-                make_op("gpu::precompile_op", {{"op", to_value(ins->get_operator())}}),
-                new_inputs);
-        });
-
-        apply_map.emplace("gpu::compute_attention_scores", [=](instruction_ref ins) {
-            auto s          = ins->get_shape();
-            auto output     = insert_allocation(ins, s);
-            auto new_inputs = ins->inputs();
-            new_inputs.push_back(output);
-            return mod->replace_instruction(
-                ins,
-                make_op("gpu::precompile_op", {{"op", to_value(ins->get_operator())}}),
-                new_inputs);
+            return mod->replace_instruction(ins,
+                                            make_op("gpu::precompile_op",
+                                                    {{"op", to_value(ins->get_operator())},
+                                                     {"output_shape", to_value(ins->get_shape())}}),
+                                            ins->inputs());
         });
     }
 

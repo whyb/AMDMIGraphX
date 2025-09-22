@@ -98,6 +98,7 @@ static shape::type_t to_shape_type(migraphx_shape_datatype_t t)
     switch(t)
     {
     case migraphx_shape_tuple_type: return shape::tuple_type;
+    case migraphx_shape_fp4x2_type: return shape::fp4x2_type;
 #define MIGRAPHX_DETAIL_SHAPE_CASE_CONVERT(x, y) \
     case migraphx_shape_##x: return shape::x;
         MIGRAPHX_SHAPE_VISIT_TYPES(MIGRAPHX_DETAIL_SHAPE_CASE_CONVERT)
@@ -111,6 +112,7 @@ static migraphx_shape_datatype_t to_shape_type(shape::type_t t)
     switch(t)
     {
     case shape::tuple_type: return migraphx_shape_tuple_type;
+    case shape::fp4x2_type: return migraphx_shape_fp4x2_type;
 #define MIGRAPHX_DETAIL_SHAPE_CASE_CONVERT(x, y) \
     case shape::x: return migraphx_shape_##x;
         MIGRAPHX_SHAPE_VISIT_TYPES(MIGRAPHX_DETAIL_SHAPE_CASE_CONVERT)
@@ -1256,6 +1258,23 @@ migraphx_argument_equal(bool* out, const_migraphx_argument_t argument, const_mig
             MIGRAPHX_THROW(migraphx_status_bad_param, "Bad parameter x: Null pointer");
         *out = migraphx::equal((argument->object), (x->object));
     });
+    return api_error_result;
+}
+
+extern "C" migraphx_status migraphx_argument_save(const_migraphx_argument_t a, const char* filename)
+{
+    auto api_error_result = migraphx::try_([&] {
+        if(a == nullptr)
+            MIGRAPHX_THROW(migraphx_status_bad_param, "Bad parameter a: Null pointer");
+        migraphx::save_argument((a->object), (filename));
+    });
+    return api_error_result;
+}
+
+extern "C" migraphx_status migraphx_argument_load(migraphx_argument_t* out, const char* filename)
+{
+    auto api_error_result = migraphx::try_(
+        [&] { *out = allocate<migraphx_argument_t>(migraphx::load_argument((filename))); });
     return api_error_result;
 }
 
