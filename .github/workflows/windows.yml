@@ -57,31 +57,33 @@ jobs:
       uses: actions/cache@v4
       with:
         path: C:\Program Files\AMD\ROCM
-        key: ${{ runner.os }}-rocm-6.2.4
+        key: ${{ runner.os }}-rocm-6.4.2
 
     - name: Setup HIP
       if: steps.cache-hip.outputs.cache-hit != 'true'
       shell: pwsh
       #REM curl -s -o hip_installer.exe -L https://download.amd.com/developer/eula/rocm-hub/AMD-Software-PRO-Edition-24.Q4-WinSvr2022-For-HIP.exe
+      #$InstallerUrl = 'https://download.amd.com/developer/eula/rocm-hub/AMD-Software-PRO-Edition-24.Q4-Win10-Win11-For-HIP.exe'
+      #REM https://download.amd.com/developer/eula/rocm-hub/AMD-Software-PRO-Edition-25.Q3-Win10-Win11-For-HIP.exe
       run: |
-        $InstallerUrl = 'https://download.amd.com/developer/eula/rocm-hub/AMD-Software-PRO-Edition-24.Q4-Win10-Win11-For-HIP.exe'
+        $InstallerUrl = 'https://download.amd.com/developer/eula/rocm-hub/AMD-Software-PRO-Edition-25.Q3-WinSvr2022-For-HIP.exe'
         $InstallerPath = "$env:RUNNER_TEMP\hip_installer.exe"
         Invoke-WebRequest -Uri $InstallerUrl -OutFile $InstallerPath
-        $TargetDir = "D:\AMD\ROCm\6.2\"
+        $TargetDir = "D:\AMD\ROCm\6.4\"
         New-Item -ItemType Directory -Force -Path $TargetDir | Out-Null
-        Start-Process $InstallerPath -ArgumentList "-INSTALL", "-OUTPUT screen", "-LOG D:\AMD\ROCm\6.2\setup.log" -NoNewWindow -Wait
-        Get-Content "D:\AMD\ROCm\6.2\setup.log"
+        Start-Process $InstallerPath -ArgumentList "-INSTALL", "-OUTPUT screen", "-LOG D:\AMD\ROCm\6.4\setup.log" -NoNewWindow -Wait
+        Get-Content "D:\AMD\ROCm\6.4\setup.log"
         dir D:\AMD\ROCm\
-        dir D:\AMD\ROCm\6.2\
-        Copy-Item "C:\Program Files\AMD\ROCm\6.2\" -Destination "D:\AMD\ROCm\" -Recurse -Force
-        dir D:\AMD\ROCm\6.2\bin
+        dir D:\AMD\ROCm\6.4\
+        Copy-Item "C:\Program Files\AMD\ROCm\6.4\" -Destination "D:\AMD\ROCm\" -Recurse -Force
+        dir D:\AMD\ROCm\6.4\bin
 
     - name: Set ROCm environment
       run: |
-        set "PATH=D:\AMD\ROCm\6.2\bin;%PATH%"
-        call "D:\AMD\ROCm\6.2\bin\hipcc.bat"
-        call "D:\AMD\ROCm\6.2\bin\hipconfig.bat"
-        echo "D:\AMD\ROCm\6.2\bin" >> $GITHUB_PATH
+        set "PATH=D:\AMD\ROCm\6.4\bin;%PATH%"
+        call "D:\AMD\ROCm\6.4\bin\hipcc.bat"
+        call "D:\AMD\ROCm\6.4\bin\hipconfig.bat"
+        echo "D:\AMD\ROCm\6.4\bin" >> $GITHUB_PATH
 
     - name: Setup Half library
       if: steps.cache-depend.outputs.cache-hit != 'true'
@@ -122,39 +124,39 @@ jobs:
         cmake --install build --config Release --prefix ..\install
         xcopy include\ ..\install\include\ /s /f /y
 
-    - name: Setup hipBLASLt library
-      shell: msys2 {0}
-      run: |
-          cd depend
-          if [ ! -d hipBLASLt ]; then
-            git clone -v --recurse-submodules --depth 1 --branch release/rocm-rel-6.2.4.1-msys2 https://github.com/whyb/hipBLASLt
-          fi
-          cd hipBLASLt
-          git checkout release/rocm-rel-6.2.4.1-msys2
-          TENS_SRC=$(cygpath -u "${GITHUB_WORKSPACE}/depend/hipBLASLt/tensilelite")
-          
-          cmake -S . -B build -G Ninja -Wno-dev \
-            -D CMAKE_BUILD_TYPE=Release \
-            -D CMAKE_C_COMPILER="/d/AMD/ROCm/6.2/bin/clang.exe" \
-            -D CMAKE_CXX_COMPILER="/d/AMD/ROCm/6.2/bin/clang++.exe" \
-            -D CMAKE_RC_COMPILER=windres \
-            -D ROCM_DIR="/d/AMD/ROCm/6.2/lib/cmake/hip" \
-            -D HIP_PATH="/d/AMD/ROCm/6.2/lib/cmake/hip" \
-            -D hip_DIR="/d/AMD/ROCm/6.2/lib/cmake/hip" \
-            -D HIP_PLATFORM=amd \
-            -D TENSILELITE_PATH="${TENS_SRC}" \
-            -D BUILD_WITH_TENSILE=ON \
-            -D BUILD_CLIENTS_PYTHON=OFF \
-            -D BUILD_DOCS=OFF \
-            -D BUILD_CLIENTS_BENCHMARKS=OFF \
-            -D BUILD_CLIENTS_SAMPLES=OFF \
-            -D BUILD_CLIENTS_TESTS=OFF \
-            -D BUILD_VERBOSE=OFF \
-            -D BUILD_SHARED_LIBS=ON \
-            -D CMAKE_PREFIX_PATH="/d/a/AMDMIGraphX/AMDMIGraphX/depend/install/lib/cmake/msgpack" \
-            -D hipblas_DIR="/d/AMD/ROCm/6.2/lib/cmake/hipblas"
-          cmake --build build --config Release --verbose
-          cmake --install build --config Release --prefix ..\install
+    #- name: Setup hipBLASLt library
+    #  shell: msys2 {0}
+    #  run: |
+    #      cd depend
+    #      if [ ! -d hipBLASLt ]; then
+    #        git clone -v --recurse-submodules --depth 1 --branch release/rocm-rel-6.2.4.1-msys2 https://github.com/whyb/hipBLASLt
+    #      fi
+    #      cd hipBLASLt
+    #      git checkout release/rocm-rel-6.2.4.1-msys2
+    #      TENS_SRC=$(cygpath -u "${GITHUB_WORKSPACE}/depend/hipBLASLt/tensilelite")
+    #      
+    #      cmake -S . -B build -G Ninja -Wno-dev \
+    #        -D CMAKE_BUILD_TYPE=Release \
+    #        -D CMAKE_C_COMPILER="/d/AMD/ROCm/6.4/bin/clang.exe" \
+    #        -D CMAKE_CXX_COMPILER="/d/AMD/ROCm/6.4/bin/clang++.exe" \
+    #        -D CMAKE_RC_COMPILER=windres \
+    #        -D ROCM_DIR="/d/AMD/ROCm/6.4/lib/cmake/hip" \
+    #        -D HIP_PATH="/d/AMD/ROCm/6.4/lib/cmake/hip" \
+    #        -D hip_DIR="/d/AMD/ROCm/6.4/lib/cmake/hip" \
+    #        -D HIP_PLATFORM=amd \
+    #        -D TENSILELITE_PATH="${TENS_SRC}" \
+    #        -D BUILD_WITH_TENSILE=ON \
+    #        -D BUILD_CLIENTS_PYTHON=OFF \
+    #        -D BUILD_DOCS=OFF \
+    #        -D BUILD_CLIENTS_BENCHMARKS=OFF \
+    #        -D BUILD_CLIENTS_SAMPLES=OFF \
+    #        -D BUILD_CLIENTS_TESTS=OFF \
+    #        -D BUILD_VERBOSE=OFF \
+    #        -D BUILD_SHARED_LIBS=ON \
+    #        -D CMAKE_PREFIX_PATH="/d/a/AMDMIGraphX/AMDMIGraphX/depend/install/lib/cmake/msgpack" \
+    #        -D hipblas_DIR="/d/AMD/ROCm/6.4/lib/cmake/hipblas"
+    #      cmake --build build --config Release --verbose
+    #      cmake --install build --config Release --prefix ..\install
 
     # 缓存 Protobuf 的构建产物
     - name: Cache Protobuf build artifacts
@@ -218,20 +220,20 @@ jobs:
     - name: Setup MIGraphX
       run: cmake -S . -B build -G Ninja -LA -Wno-dev
         -D CMAKE_BUILD_TYPE=Release
-        -D CMAKE_C_COMPILER="D:\AMD\ROCm\6.2\bin\clang.exe"
-        -D CMAKE_CXX_COMPILER="D:\AMD\ROCm\6.2\bin\clang++.exe"
+        -D CMAKE_C_COMPILER="D:\AMD\ROCm\6.4\bin\clang.exe"
+        -D CMAKE_CXX_COMPILER="D:\AMD\ROCm\6.4\bin\clang++.exe"
         -D CMAKE_PREFIX_PATH="%cd%/depend/install;C:/vcpkg/packages/sqlite3_x64-windows-static"
         -D BUILD_TESTING=OFF
-        -D hip_DIR="D:\AMD\ROCm\6.2\lib\cmake\hip"
-        -D hiprtc_DIR="D:\AMD\ROCm\6.2\lib\cmake\hiprtc"
+        -D hip_DIR="D:\AMD\ROCm\6.4\lib\cmake\hip"
+        -D hiprtc_DIR="D:\AMD\ROCm\6.4\lib\cmake\hiprtc"
         -D HIP_PLATFORM=amd
         -D GPU_TARGETS="gfx1030;gfx1031;gfx1032;gfx1100;gfx1101;gfx1102"
         -D CMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
         -D MIGRAPHX_ENABLE_PYTHON=OFF
         -D MIGRAPHX_USE_HIPBLASLT=ON
         -D MIGRAPHX_USE_ROCBLAS=ON
-        -D rocblas_DIR="D:\AMD\ROCm\6.2\lib\cmake\rocblas"
-        -D hipblas_DIR="D:\AMD\ROCm\6.2\lib\cmake\hipblas"
+        -D rocblas_DIR="D:\AMD\ROCm\6.4\lib\cmake\rocblas"
+        -D hipblas_DIR="D:\AMD\ROCm\6.4\lib\cmake\hipblas"
         -D msgpack_DIR="D:\a\AMDMIGraphX\AMDMIGraphX\depend\install\lib\cmake\msgpack"
 
     - name: Build MIGraphX
