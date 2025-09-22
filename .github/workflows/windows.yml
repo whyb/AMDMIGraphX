@@ -124,39 +124,41 @@ jobs:
         cmake --install build --config Release --prefix ..\install
         xcopy include\ ..\install\include\ /s /f /y
 
-    #- name: Setup hipBLASLt library
-    #  shell: msys2 {0}
-    #  run: |
-    #      cd depend
-    #      if [ ! -d hipBLASLt ]; then
-    #        git clone -v --recurse-submodules --depth 1 --branch release/rocm-rel-6.2.4.1-msys2 https://github.com/whyb/hipBLASLt
-    #      fi
-    #      cd hipBLASLt
-    #      git checkout release/rocm-rel-6.2.4.1-msys2
-    #      TENS_SRC=$(cygpath -u "${GITHUB_WORKSPACE}/depend/hipBLASLt/tensilelite")
-    #      
-    #      cmake -S . -B build -G Ninja -Wno-dev \
-    #        -D CMAKE_BUILD_TYPE=Release \
-    #        -D CMAKE_C_COMPILER="/d/AMD/ROCm/6.4/bin/clang.exe" \
-    #        -D CMAKE_CXX_COMPILER="/d/AMD/ROCm/6.4/bin/clang++.exe" \
-    #        -D CMAKE_RC_COMPILER=windres \
-    #        -D ROCM_DIR="/d/AMD/ROCm/6.4/lib/cmake/hip" \
-    #        -D HIP_PATH="/d/AMD/ROCm/6.4/lib/cmake/hip" \
-    #        -D hip_DIR="/d/AMD/ROCm/6.4/lib/cmake/hip" \
-    #        -D HIP_PLATFORM=amd \
-    #        -D TENSILELITE_PATH="${TENS_SRC}" \
-    #        -D BUILD_WITH_TENSILE=ON \
-    #        -D BUILD_CLIENTS_PYTHON=OFF \
-    #        -D BUILD_DOCS=OFF \
-    #        -D BUILD_CLIENTS_BENCHMARKS=OFF \
-    #        -D BUILD_CLIENTS_SAMPLES=OFF \
-    #        -D BUILD_CLIENTS_TESTS=OFF \
-    #        -D BUILD_VERBOSE=OFF \
-    #        -D BUILD_SHARED_LIBS=ON \
-    #        -D CMAKE_PREFIX_PATH="/d/a/AMDMIGraphX/AMDMIGraphX/depend/install/lib/cmake/msgpack" \
-    #        -D hipblas_DIR="/d/AMD/ROCm/6.4/lib/cmake/hipblas"
-    #      cmake --build build --config Release --verbose
-    #      cmake --install build --config Release --prefix ..\install
+    - name: Setup hipBLASLt library
+      shell: bash
+      run: |
+        set -e
+        cd depend
+        if [ ! -d hipBLASLt ]; then
+          git clone -v --recurse-submodules --depth 1 --branch rocm-6.4.2 https://github.com/ROCm/hipBLASLt
+        fi
+        cd hipBLASLt
+
+        TENS_SRC="${GITHUB_WORKSPACE}/depend/hipBLASLt/tensilelite"
+
+        cmake -S . -B build -G Ninja -Wno-dev \
+          -D CMAKE_BUILD_TYPE=Release \
+          -D CMAKE_C_COMPILER="D:/AMD/ROCm/6.4/bin/clang.exe" \
+          -D CMAKE_CXX_COMPILER="D:/AMD/ROCm/6.4/bin/clang++.exe" \
+          -D CMAKE_RC_COMPILER=windres \
+          -D ROCM_DIR="D:/AMD/ROCm/6.4/lib/cmake/hip" \
+          -D HIP_PATH="D:/AMD/ROCm/6.4/lib/cmake/hip" \
+          -D hip_DIR="D:/AMD/ROCm/6.4/lib/cmake/hip" \
+          -D HIP_PLATFORM=amd \
+          -D TENSILELITE_PATH="${TENS_SRC}" \
+          -D BUILD_WITH_TENSILE=ON \
+          -D BUILD_CLIENTS_PYTHON=OFF \
+          -D BUILD_DOCS=OFF \
+          -D BUILD_CLIENTS_BENCHMARKS=OFF \
+          -D BUILD_CLIENTS_SAMPLES=OFF \
+          -D BUILD_CLIENTS_TESTS=OFF \
+          -D BUILD_VERBOSE=OFF \
+          -D BUILD_SHARED_LIBS=ON \
+          -D CMAKE_PREFIX_PATH="D:/a/AMDMIGraphX/AMDMIGraphX/depend/install/lib/cmake/msgpack" \
+          -D hipblas_DIR="D:/AMD/ROCm/6.4/lib/cmake/hipblas"
+
+        cmake --build build --config Release --verbose
+        cmake --install build --config Release --prefix ../install
 
     # 缓存 Protobuf 的构建产物
     - name: Cache Protobuf build artifacts
@@ -196,7 +198,7 @@ jobs:
         path: |
           depend/rocMLIR/build
           depend/install/rocMLIR
-        key: ${{ runner.os }}-rocmlir-13065c4b3a216e1b13dfb8f746b8a0d421f124e8
+        key: ${{ runner.os }}-rocmlir-13065c4b3a216e1b13dfb8f746b8a0d421f124e9
 
     # 如果缓存命中了，则可以简单输出信息；也可以补充复制操作
     - name: Restore cached rocMLIR artifacts
@@ -209,10 +211,9 @@ jobs:
       run: |
         cd depend
         if not exist rocMLIR (
-          git clone https://github.com/ROCm/rocMLIR
+          git clone -v --recurse-submodules --depth 1 --branch rocm-6.4.2 --progress "https://github.com/ROCm/rocMLIR"
         )
         cd rocMLIR
-        git checkout 13065c4b3a216e1b13dfb8f746b8a0d421f124e8
         cmake -S . -B build -G Ninja -D CMAKE_BUILD_TYPE=Release -D CMAKE_PREFIX_PATH="%cd%/..\install" -D BUILD_FAT_LIBROCKCOMPILER=ON -D CMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded -Wno-dev
         cmake --build build
         cmake --install build --config Release --prefix ..\install
