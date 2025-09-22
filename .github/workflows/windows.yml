@@ -235,6 +235,7 @@ jobs:
         -D rocblas_DIR="D:\AMD\ROCm\6.4\lib\cmake\rocblas"
         -D hipblas_DIR="D:\AMD\ROCm\6.4\lib\cmake\hipblas"
         -D msgpack_DIR="D:\a\AMDMIGraphX\AMDMIGraphX\depend\install\lib\cmake\msgpack"
+        -D MIGRAPHX_USE_MIOPEN=OFF
 
     - name: Build MIGraphX
       run: cmake --build build --config Release --verbose
