@@ -64,9 +64,9 @@ jobs:
       shell: pwsh
       #REM curl -s -o hip_installer.exe -L https://download.amd.com/developer/eula/rocm-hub/AMD-Software-PRO-Edition-24.Q4-WinSvr2022-For-HIP.exe
       #$InstallerUrl = 'https://download.amd.com/developer/eula/rocm-hub/AMD-Software-PRO-Edition-24.Q4-Win10-Win11-For-HIP.exe'
-      #REM https://download.amd.com/developer/eula/rocm-hub/AMD-Software-PRO-Edition-25.Q3-Win10-Win11-For-HIP.exe
+      #REM https://download.amd.com/developer/eula/rocm-hub/AMD-Software-PRO-Edition-25.Q3-WinSvr2022-For-HIP.exe
       run: |
-        $InstallerUrl = 'https://download.amd.com/developer/eula/rocm-hub/AMD-Software-PRO-Edition-25.Q3-WinSvr2022-For-HIP.exe'
+        $InstallerUrl = 'https://download.amd.com/developer/eula/rocm-hub/AMD-Software-PRO-Edition-25.Q3-Win10-Win11-For-HIP.exe'
         $InstallerPath = "$env:RUNNER_TEMP\hip_installer.exe"
         Invoke-WebRequest -Uri $InstallerUrl -OutFile $InstallerPath
         $TargetDir = "D:\AMD\ROCm\6.4\"
